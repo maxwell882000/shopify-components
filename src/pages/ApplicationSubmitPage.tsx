@@ -7,8 +7,6 @@ import {useState} from "react";
 import {LessonService} from "../infrastructure/axios/services/LessonService.ts";
 import {ToastContainer} from "react-toastify";
 import {successNotification} from "../utils/notifications/successNotification.ts";
-// import {useState} from "react";
-// import {CreateLessonRequest} from "../infrastructure/axios/services/dtos/requests/createLessonRequest.ts";
 
 const ApplicationSubmitPage = () => {
     const [lessonDto, setLessonDto] = useState<CreateLessonRequest>({phone: "", isCallNow: false, lessonSchedules: []});
