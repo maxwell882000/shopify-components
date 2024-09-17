@@ -8,5 +8,6 @@ export default defineConfig({
             plugins: [tailwindcss()],
         },
     },
+    base: '/shopify-components/', // Replace with your GitHub repository name
     plugins: [react()],
 })

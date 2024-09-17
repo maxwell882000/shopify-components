@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box,
     Checkbox,
@@ -18,18 +18,20 @@ import {
     TagLabel
 } from '@chakra-ui/react';
 import {MultiSelect, Option} from "chakra-multiselect";
+import {DayOfWeek} from "../../dto/common/dayOfWeek.ts";
+import {LessonScheduleDto} from "../../dto/lesson/lessonScheduleDto.ts";
+
 
 const daysOfWeek = [
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
 ];
 
 const generateTimeSlots = (): string[] => {
     const slots: string[] = [];
     const format = (hour: number, minute: number) => {
-        const suffix = hour >= 12 ? 'PM' : 'AM';
-        const hourIn12 = hour % 12 === 0 ? 12 : hour % 12;
-        const minuteString = minute === 0 ? '00' : minute;
-        return `${hourIn12}:${minuteString} ${suffix}`;
+        const minuteString = minute === 0 ? '00' : minute.toString();
+        const hourString = hour < 10 ? `0${hour}` : hour.toString(); // Add leading zero for hours < 10
+        return `${hourString}:${minuteString}`;
     };
 
     for (let hour = 0; hour < 24; hour++) {
@@ -41,7 +43,19 @@ const generateTimeSlots = (): string[] => {
 
 const timeSlots = generateTimeSlots();
 
-const MultiSelectDropdown: React.FC = () => {
+const getEnumName = (enumObj: any, value: number): string => {
+    return enumObj[value]; // Reverse mapping
+}
+
+const getEnumValue = (enumObj: any, value: string): DayOfWeek => {
+    return enumObj[value]; // Reverse mapping
+}
+
+interface Props {
+    onChange: (value: LessonScheduleDto[]) => void;
+}
+
+const MultiSelectDropdown = ({onChange}: Props) => {
     const [selectedDays, setSelectedDays] = useState<string[]>([]);
     const [dayTimes, setDayTimes] = useState<Record<string, string[]>>({});
     const [currentDay, setCurrentDay] = useState<string | null>(null);
@@ -62,6 +76,18 @@ const MultiSelectDropdown: React.FC = () => {
     const handleTimeChange = (options: Option[]) => {
         setModalTimes(options.map(e => e.value.toString()));
     };
+    useEffect(() => {
+        let result: LessonScheduleDto[] = []
+        Object.keys(dayTimes).map((k: string) => {
+            dayTimes[k].forEach(v => {
+                result.push({
+                    dayOfWeek: getEnumValue(DayOfWeek, k),
+                    hour: parseInt(v.slice(0, 2))
+                } as LessonScheduleDto)
+            })
+        })
+        onChange(result);
+    }, [dayTimes]);
 
     const handleSave = () => {
         if (currentDay) {
@@ -71,6 +97,8 @@ const MultiSelectDropdown: React.FC = () => {
                 ...prev,
                 [currentDay]: modalTimes
             }));
+
+            console.log(dayTimes, selectedDays);
         }
         onClose();
     };
@@ -92,7 +120,7 @@ const MultiSelectDropdown: React.FC = () => {
             <FormControl>
                 <FormLabel>Select Days of the Week</FormLabel>
                 <Box>
-                    {daysOfWeek.map(day => (
+                    {daysOfWeek.map(d => getEnumName(DayOfWeek, d)).map(day => (
                         <Box key={day} mb={2}>
                             <Checkbox
                                 value={day}
@@ -106,7 +134,8 @@ const MultiSelectDropdown: React.FC = () => {
                                     {dayTimes[day].map(time => (
                                         <Tag key={`${day}-${time}`} m={1} size="md" variant="solid" colorScheme="blue">
                                             <TagLabel>{time}</TagLabel>
-                                            <TagCloseButton onClick={() => handleRemoveTime(day, time)}/>
+                                            <TagCloseButton
+                                                onClick={() => handleRemoveTime(day, time)}/>
                                         </Tag>
                                     ))}
                                 </Box>

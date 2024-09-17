@@ -5,7 +5,7 @@ import ApplicationSubmitPage from "../pages/ApplicationSubmitPage.tsx";
 
 export const router = createBrowserRouter([
     {
-        path: "application-submit/",
-        element: ApplicationSubmitPage()
+        path: "shopify-components/",
+        element: <ApplicationSubmitPage/>
     },
 ]);
