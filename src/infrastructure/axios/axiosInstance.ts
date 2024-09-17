@@ -24,7 +24,7 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     (error: any) => {
-        if (error.status === 400 && error?.response?.data?.message) {
+        if ((error.status === 400 || error.status === 500) && error?.response?.data?.message) {
             errorNotification(error.response.data.message);
         } else if (error.status === 400 && error?.response?.data?.errors) {
             throw new ValidationError(error.response.data.errors);

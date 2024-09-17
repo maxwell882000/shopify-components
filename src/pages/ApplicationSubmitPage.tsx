@@ -1,6 +1,6 @@
 import PhoneInputWithCountry from "../components/inputs/PhoneInputWithCountry.tsx";
 import MultiSelectDropdown from "../components/select/MultiSelectDropdown.tsx";
-import {Button, Container, Heading, VStack, Text, Flex} from "@chakra-ui/react";
+import {Button, Container, Heading, VStack, Text, Flex, CircularProgress} from "@chakra-ui/react";
 import Toggle from "../components/inputs/Toggle.tsx";
 import {CreateLessonRequest} from "../infrastructure/axios/services/dtos/requests/createLessonRequest.ts";
 import {useState} from "react";
@@ -11,11 +11,17 @@ import {successNotification} from "../utils/notifications/successNotification.ts
 // import {CreateLessonRequest} from "../infrastructure/axios/services/dtos/requests/createLessonRequest.ts";
 
 const ApplicationSubmitPage = () => {
-    const [lessonDto, setLessonDto] = useState<CreateLessonRequest>({phone: "", isCallNow: false, lessonSchedules: []})
-    return <form onSubmit={(e) => {
+    const [lessonDto, setLessonDto] = useState<CreateLessonRequest>({phone: "", isCallNow: false, lessonSchedules: []});
+    const [isLoading, setIsLoading] = useState(false);
+    return <form onSubmit={async (e) => {
         e.preventDefault();
-        LessonService.createLesson(lessonDto);
-        successNotification("Your request accepted !");
+        setIsLoading(true);
+        try {
+            await LessonService.createLesson(lessonDto);
+            successNotification("Soon we will call you !");
+        } catch (e) {
+        }
+        setIsLoading(false);
     }} className={"flex flex-col justify-center items-center m-auto w-[520px]"}>
         <ToastContainer/>
         <Flex direction={"column"} className={"w-full space-y-6"}>
@@ -41,9 +47,14 @@ const ApplicationSubmitPage = () => {
                 console.log(value, "MultiSelectDropdown")
                 setLessonDto({...lessonDto, lessonSchedules: value});
             }}/>
-            <Button type={"submit"} className={"w-full"} colorScheme='blue' size='md'>
-                Start Lessons
-            </Button>
+
+            {isLoading ? <div className={"w-full flex justify-center items-center"}>
+                    <CircularProgress isIndeterminate color="blue.300" thickness='12px'/>
+                </div> :
+                <Button type={"submit"} className={"w-full"} colorScheme='blue' size='md'>
+                    Start Lessons
+                </Button>}
+
         </Flex>
     </form>
 }
