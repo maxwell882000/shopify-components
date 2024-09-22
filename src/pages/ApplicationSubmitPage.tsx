@@ -11,16 +11,7 @@ import {successNotification} from "../utils/notifications/successNotification.ts
 const ApplicationSubmitPage = () => {
     const [lessonDto, setLessonDto] = useState<CreateLessonRequest>({phone: "", isCallNow: false, lessonSchedules: []});
     const [isLoading, setIsLoading] = useState(false);
-    return <form onSubmit={async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        try {
-            await LessonService.createLesson(lessonDto);
-            successNotification("Soon we will call you !");
-        } catch (e) {
-        }
-        setIsLoading(false);
-    }} className={"flex flex-col justify-center items-center m-auto w-[520px]"}>
+    return <form className={"flex flex-col justify-center items-center m-auto w-[520px]"}>
         <ToastContainer/>
         <Flex direction={"column"} className={"w-full space-y-6"}>
             <Container className={"text-center"} maxW="container.md" centerContent>
@@ -49,7 +40,16 @@ const ApplicationSubmitPage = () => {
             {isLoading ? <div className={"w-full flex justify-center items-center"}>
                     <CircularProgress isIndeterminate color="blue.300" thickness='12px'/>
                 </div> :
-                <Button type={"submit"} className={"w-full"} colorScheme='blue' size='md'>
+                <Button onClick={async () => {
+                    console.log("IS STARTED !!!!!")
+                    setIsLoading(true);
+                    try {
+                        await LessonService.createLesson(lessonDto);
+                        successNotification("Soon we will call you !");
+                    } catch (e) {
+                    }
+                    setIsLoading(false);
+                }} className={"w-full"} colorScheme='blue' size='md'>
                     Start Lessons
                 </Button>}
 
