@@ -39,8 +39,6 @@ const PhoneInputWithCountry = ({value, onChange}: ChakraPhoneProps) => {
                 />
             </div>
         </div>
-
-
     );
 };
 

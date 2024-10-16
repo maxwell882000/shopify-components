@@ -1,4 +1,4 @@
-import { DayOfWeek } from "../infrastructure/axios/services/event/dtos/dayOfWeek.ts";
+import {DayOfWeek} from "../dto/common/dayOfWeek.ts";
 
 export const DayOfWeekToString = {
   [DayOfWeek.Monday]: "Понедельник",

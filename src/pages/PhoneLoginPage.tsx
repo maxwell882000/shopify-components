@@ -1,17 +1,15 @@
 import PhoneInputWithCountry from "../components/inputs/PhoneInputWithCountry.tsx";
-import MultiSelectDropdown from "../components/select/MultiSelectDropdown.tsx";
-import {Button, Container, Heading, VStack, Text, Flex, CircularProgress} from "@chakra-ui/react";
-import Toggle from "../components/inputs/Toggle.tsx";
+import {Button, Container, Heading, VStack, Text, Flex} from "@chakra-ui/react";
 import {CreateLessonRequest} from "../infrastructure/axios/services/dtos/requests/createLessonRequest.ts";
 import {useState} from "react";
 import {LessonService} from "../infrastructure/axios/services/LessonService.ts";
 import {ToastContainer} from "react-toastify";
 import {successNotification} from "../utils/notifications/successNotification.ts";
 
-const ApplicationSubmitPage = () => {
+const PhoneLoginPage = () => {
     const [lessonDto, setLessonDto] = useState<CreateLessonRequest>({phone: "", isCallNow: false, lessonSchedules: []});
     const [isLoading, setIsLoading] = useState(false);
-    return <form className={"flex flex-col justify-center items-center m-auto w-[520px]"}>
+    return <form className={"flex flex-col justify-center items-center m-auto w-[400px]"}>
         <ToastContainer/>
         <Flex direction={"column"} className={"w-full space-y-6"}>
             <Container className={"text-center"} maxW="container.md" centerContent>
@@ -29,30 +27,21 @@ const ApplicationSubmitPage = () => {
             <PhoneInputWithCountry value={""} onChange={(text) => {
                 setLessonDto({...lessonDto, phone: text});
             }}/>
-            <Toggle label={"Call now ?"} onChange={(value) => {
-                setLessonDto({...lessonDto, isCallNow: value});
-            }}/>
-            <MultiSelectDropdown onChange={(value) => {
-                setLessonDto({...lessonDto, lessonSchedules: value});
-            }}/>
 
-            {isLoading ? <div className={"w-full flex justify-center items-center"}>
-                    <CircularProgress isIndeterminate color="blue.300" thickness='12px'/>
-                </div> :
-                <Button onClick={async () => {
-                    setIsLoading(true);
-                    try {
-                        await LessonService.createLesson(lessonDto);
-                        successNotification("Soon we will call you !");
-                    } catch (e) {
-                    }
-                    setIsLoading(false);
-                }} className={"w-full"} colorScheme='blue' size='md'>
-                    Start Lessons
-                </Button>}
+            <Button isLoading={isLoading} onClick={async () => {
+                setIsLoading(true);
+                try {
+                    await LessonService.createLesson(lessonDto);
+                    successNotification("Soon we will call you !");
+                } catch (e) {
+                }
+                setIsLoading(false);
+            }} className={"w-full"} colorScheme='blue' size='md'>
+                Start Lessons
+            </Button>
 
         </Flex>
     </form>
 }
 
-export default ApplicationSubmitPage
+export default PhoneLoginPage
